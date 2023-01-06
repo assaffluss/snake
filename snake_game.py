@@ -16,6 +16,10 @@ class SnakeGame:
             self.__x -= 1
         elif (self.__key_clicked == 'Right') and (self.__x < 40):
             self.__x += 1
+        if (self.__key_clicked == 'Up') and (self.__x > 0):
+            self.__y -= 1
+        elif (self.__key_clicked == 'Down') and (self.__x < 40):
+            self.__y += 1
 
     def draw_board(self, gd: GameDisplay) -> None:
         gd.draw_cell(self.__x, self.__y, "blue")

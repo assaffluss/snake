@@ -11,40 +11,35 @@ def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
     # DRAW BOARD
     game.draw_board(gd)
     # END OF ROUND 0
-    rounds = args.rounds
-    while not game.is_over() and rounds != 0:
+    gd.end_round()
+    check_click = None
+    while not game.is_over():
         # CHECK KEY CLICKS
-        try:
-            last_click = key_clicked
-        except:
-            pass
         key_clicked = gd.get_key_clicked()
-        game.read_key(key_clicked)
-        try:
-            check_click = clicked(key_clicked, last_click)
-            if not check_click:
+        if key_clicked is not None:
+            if key_clicked == check_click:
                 continue
-        except:
-            pass
+            last_click = key_clicked
+            check_click = clicked(last_click)
+        game.read_key(key_clicked)
         # UPDATE OBJECTS
         game.update_objects()
         # DRAW BOARD
         game.draw_board(gd)
-        rounds -= 1
         # WAIT FOR NEXT ROUND:
         game.end_round()
         gd.end_round()
 
 
-def clicked(key_clicked, last_click):
-    if last_click == 'Up' and key_clicked == 'Down':
-        return False
-    if last_click == 'Down' and key_clicked == 'Up':
-        return False
-    if last_click == 'Left' and key_clicked == 'Right':
-        return False
-    if last_click == 'Right' and last_click == 'Left':
-        return False
+def clicked(last_click):
+    if last_click == 'Up':
+        return 'Down'
+    if last_click == 'Down':
+        return 'Up'
+    if last_click == 'Left':
+        return 'Right'
+    if last_click == 'Right':
+        return 'Left'
     return True
 
 

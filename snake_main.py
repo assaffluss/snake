@@ -3,8 +3,8 @@ import game_utils
 from snake_game import SnakeGame
 from game_display import GameDisplay
 
-def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
 
+def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
     # INIT OBJECTS
     game = SnakeGame()
     gd.show_score(0)
@@ -22,31 +22,30 @@ def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
         game.read_key(key_clicked)
         try:
             check_click = clicked(key_clicked, last_click)
+            if not check_click:
+                continue
         except:
             pass
         # UPDATE OBJECTS
         game.update_objects()
         # DRAW BOARD
         game.draw_board(gd)
+        rounds -= 1
         # WAIT FOR NEXT ROUND:
         game.end_round()
         gd.end_round()
 
 
 def clicked(key_clicked, last_click):
-    if key_clicked == 'Up':
-        check_click = 0
-    if key_clicked == 'Down':
-        check_click = 1
-    if key_clicked == 'Left':
-        check_click = 2
-    if key_clicked == 'Right':
-        check_click = 3
-    if last_click == 'Up' and check_click == 1 or last_click == 'Down' and check_click == 0:
-        return
-    if last_click == 'Left' and check_click == 3 or last_click == 'Right' and check_click == 2:
-        return
-    return check_click
+    if last_click == 'Up' and key_clicked == 'Down':
+        return False
+    if last_click == 'Down' and key_clicked == 'Up':
+        return False
+    if last_click == 'Left' and key_clicked == 'Right':
+        return False
+    if last_click == 'Right' and last_click == 'Left':
+        return False
+    return True
 
 
 if __name__ == "__main__":

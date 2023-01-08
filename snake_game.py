@@ -53,13 +53,13 @@ class SnakeGame:
         pass
 
     def is_over(self) -> bool:
-    #if snake head goes out of bounds game ends
-    if self.__x >= 40 or self.__x < 0:
-        return True
-    if self.__y >= 30 or self.__y <=0:
-        return True
-    #if snake head bumps into itself game ends
-    for block in self.cells[0:len(self.cells)-2]:
-        if self.__x  == block[0] and self.__y == block[1]:
+        #if snake head goes out of bounds game ends
+        if self.__x >= 40 or self.__x < 0:
             return True
+        if self.__y >= 30 or self.__y <=0:
+            return True
+        #if snake head bumps into itself game ends
+        for block in self.cells[0:len(self.cells)-2]:
+            if self.__x  == block[0] and self.__y == block[1]:
+                return True
     return False

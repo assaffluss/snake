@@ -32,6 +32,19 @@ class SnakeGame:
             self.move(self.direction)
         self.cells.append((self.__x, self.__y))
         self.cells.remove(self.cells[0])
+        
+        # apples
+        if len(self.apples) < self.n_apples: # if max number of apples wasn't reached
+            # get random coordinates for the apple
+            coordinates = get_random_apple_data()
+            # check if coordinates are valid
+            is_valid = True
+            if coordinates in self.apples or coordinates in self.snake or coordinates in self.walls : # if coordinates clash with existing apple , snake or wall
+                is_valid = False
+            # add apple to the game
+            if is_valid:
+                self.apples.append(coordinates)
+
 
     def move(self, direction):
         if direction == 'l':
@@ -62,3 +75,4 @@ class SnakeGame:
             if self.__x  == block[0] and self.__y == block[1]:
                 return True
         return False
+    

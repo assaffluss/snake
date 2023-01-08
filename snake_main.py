@@ -17,8 +17,10 @@ def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
         # CHECK KEY CLICKS
         key_clicked = gd.get_key_clicked()
         if key_clicked is not None:
+            # check if current click is an illegal one
             if key_clicked == check_click:
                 continue
+            # update last click to current one for next round
             last_click = key_clicked
             check_click = clicked(last_click)
         game.read_key(key_clicked)
@@ -32,6 +34,8 @@ def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
 
 
 def clicked(last_click):
+    # return the value of illegal click for next time
+    # user clicks
     if last_click == 'Up':
         return 'Down'
     if last_click == 'Down':
@@ -40,7 +44,7 @@ def clicked(last_click):
         return 'Right'
     if last_click == 'Right':
         return 'Left'
-    return True
+    return None
 
 
 if __name__ == "__main__":

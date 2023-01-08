@@ -62,4 +62,4 @@ class SnakeGame:
         for block in self.cells[0:len(self.cells)-2]:
             if self.__x  == block[0] and self.__y == block[1]:
                 return True
-    return False
+        return False

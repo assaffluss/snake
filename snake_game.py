@@ -12,6 +12,7 @@ class SnakeGame:
         self.__key_clicked = None
         self.snake = [(self.__x - 2, self.__y), (self.__x - 1, self.__y), (self.__x, self.__y)]
         self.apples = []
+        # change number of apples to arg by user with default being 3
         self.n_apples = 3
         self.walls = []
         self.direction = None

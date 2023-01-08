@@ -1,5 +1,6 @@
 from typing import Optional
 from game_display import GameDisplay
+from game_utils import *
 
 
 class SnakeGame:
@@ -11,6 +12,7 @@ class SnakeGame:
         self.cells = [(self.__x-2, self.__y), (self.__x-1, self.__y), (self.__x, self.__y)]
         self.len = 3
         self.direction = None
+        
 
     def read_key(self, key_clicked: Optional[str])-> None:
         self.__key_clicked = key_clicked

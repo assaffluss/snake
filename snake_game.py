@@ -6,6 +6,7 @@ from game_utils import *
 class SnakeGame:
 
     def __init__(self) -> None:
+        # check how to get HEIGHT and WIDTH
         self.__x = 5
         self.__y = 5
         self.__key_clicked = None
@@ -68,8 +69,7 @@ class SnakeGame:
 
     def is_over(self) -> bool:
         # if snake head goes out of bounds game ends
-        # check why head is not being removed and why right
-        # and upper bounds return an error
+        # check why right and upper bounds return an error
         if self.__x >= 40 or self.__x <= 0:
             self.snake.remove((self.__x, self.__y))
             self.update_objects()
@@ -79,8 +79,10 @@ class SnakeGame:
             self.update_objects()
             return True
         # if snake head bumps into itself game ends
-        # for block in self.snake[0:len(self.snake) - 2]:
-        #     if self.__x == block[0] and self.__y == block[1]:
-        #         return True
+        for block in self.snake:
+            if block == self.snake[len(self.snake)-2]:
+                return False
+            if block == (self.__x, self.__y):
+                return True
         return False
 

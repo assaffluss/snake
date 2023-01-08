@@ -68,9 +68,15 @@ class SnakeGame:
 
     def is_over(self) -> bool:
         # if snake head goes out of bounds game ends
+        # check why head is not being removed and why right
+        # and upper bounds return an error
         if self.__x >= 40 or self.__x <= 0:
+            self.snake.remove((self.__x, self.__y))
+            self.update_objects()
             return True
         if self.__y >= 30 or self.__y <= 0:
+            self.snake.remove((self.__x, self.__y))
+            self.update_objects()
             return True
         # if snake head bumps into itself game ends
         # for block in self.snake[0:len(self.snake) - 2]:

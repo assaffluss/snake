@@ -9,15 +9,16 @@ class SnakeGame:
         self.__x = 5
         self.__y = 5
         self.__key_clicked = None
-        self.cells = [(self.__x-2, self.__y), (self.__x-1, self.__y), (self.__x, self.__y)]
-        self.len = 3
+        self.snake = [(self.__x - 2, self.__y), (self.__x - 1, self.__y), (self.__x, self.__y)]
+        self.apples = []
+        self.n_apples = 3
+        self.walls = []
         self.direction = None
-        
 
-    def read_key(self, key_clicked: Optional[str])-> None:
+    def read_key(self, key_clicked: Optional[str]) -> None:
         self.__key_clicked = key_clicked
 
-    def update_objects(self)-> None:
+    def update_objects(self) -> None:
         if (self.__key_clicked == 'Left') and (self.__x > 0):
             self.__x -= 1
             self.direction = 'l'
@@ -32,21 +33,20 @@ class SnakeGame:
             self.direction = 'd'
         if self.__key_clicked is None:
             self.move(self.direction)
-        self.cells.append((self.__x, self.__y))
-        self.cells.remove(self.cells[0])
-        
+        self.snake.append((self.__x, self.__y))
+        self.snake.remove(self.snake[0])
+
         # apples
-        if len(self.apples) < self.n_apples: # if max number of apples wasn't reached
+        if len(self.apples) < self.n_apples:  # if max number of apples wasn't reached
             # get random coordinates for the apple
             coordinates = get_random_apple_data()
             # check if coordinates are valid
             is_valid = True
-            if coordinates in self.apples or coordinates in self.snake or coordinates in self.walls : # if coordinates clash with existing apple , snake or wall
+            if coordinates in self.apples or coordinates in self.snake or coordinates in self.walls:  # if coordinates clash with existing apple , snake or wall
                 is_valid = False
             # add apple to the game
             if is_valid:
                 self.apples.append(coordinates)
-
 
     def move(self, direction):
         if direction == 'l':
@@ -60,21 +60,21 @@ class SnakeGame:
 
     def draw_board(self, gd: GameDisplay) -> None:
         # Draw updated position
-        for x, y in self.cells:
+        for x, y in self.snake:
             gd.draw_cell(x, y, "black")
 
     def end_round(self) -> None:
         pass
 
     def is_over(self) -> bool:
-        #if snake head goes out of bounds game ends
-        if self.__x > 40 or self.__x < 0:
+        # if snake head goes out of bounds game ends
+        if self.__x >= 40 or self.__x <= 0:
             return True
-        if self.__y > 30 or self.__y < 0:
+        if self.__y >= 30 or self.__y <= 0:
             return True
-        #if snake head bumps into itself game ends
-        for block in self.cells[0:len(self.cells)-2]:
-            if self.__x  == block[0] and self.__y == block[1]:
-                return True
+        # if snake head bumps into itself game ends
+        # for block in self.snake[0:len(self.snake) - 2]:
+        #     if self.__x == block[0] and self.__y == block[1]:
+        #         return True
         return False
-    
+

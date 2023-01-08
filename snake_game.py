@@ -58,7 +58,7 @@ class SnakeGame:
         if self.__y > 30 or self.__y < 0:
             return True
         #if snake head bumps into itself game ends
-         for block in self.cells[0:len(self.cells)-2]:
+        for block in self.cells[0:len(self.cells)-2]:
             if self.__x  == block[0] and self.__y == block[1]:
                 return True
         return False

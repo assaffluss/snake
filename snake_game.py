@@ -85,21 +85,33 @@ class SnakeGame:
     def end_round(self) -> None:
         pass
 
+#     def is_over(self) -> bool:
+#         # if snake head goes out of bounds game ends
+#         # check why bounds return an error and why
+#         # <= 0 doesn't let us reach the last line of board
+#         if self.__x >= 40 or self.__x < 0:
+#             self.snake.remove((self.__x, self.__y))
+#             return True
+#         if self.__y >= 30 or self.__y < 0:
+#             self.snake.remove((self.__x, self.__y))
+#             return True
+#         # if snake head bumps into itself game ends
+#         for block in self.snake:
+#             if block == self.snake[len(self.snake)-2]:
+#                 return False
+#             if block == (self.__x, self.__y):
+#                 return True
+#         return False
     def is_over(self) -> bool:
         # if snake head goes out of bounds game ends
-        # check why bounds return an error and why
-        # <= 0 doesn't let us reach the last line of board
-        if self.__x >= 40 or self.__x < 0:
-            self.snake.remove((self.__x, self.__y))
-            return True
-        if self.__y >= 30 or self.__y < 0:
-            self.snake.remove((self.__x, self.__y))
+        # check why right and upper bounds return an error
+        if self.__x == 39 or self.__x == 0 or self.__y == 29 or self.__y == 0:
+
             return True
         # if snake head bumps into itself game ends
         for block in self.snake:
-            if block == self.snake[len(self.snake)-2]:
+            if block == self.snake[len(self.snake) - 2]:
                 return False
             if block == (self.__x, self.__y):
                 return True
         return False
-

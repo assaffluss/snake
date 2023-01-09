@@ -72,6 +72,19 @@ class SnakeGame:
                 self.score += round(math.sqrt(len(self.snake)-1))
                 return True
         return False
+        
+    def wall_maker(self):
+        if len(self.walls) < self.n_walls:
+            for i in range(self.n_walls):
+                wall_coordinates = get_random_wall_data()
+                #check if coordinates are valid
+                is_valid = True
+                # if coordinates clash with apple, snake or existing wall
+                if wall_coordinates in self.apples or wall_coordinates in self.snake or wall_coordinates in self.walls:
+                    is_valid = False
+                # add apple to the game
+                if is_valid:
+                    self.walls.append(wall_coordinates)
 
     def get_score(self):
         return self.score

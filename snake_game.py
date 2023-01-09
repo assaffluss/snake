@@ -129,14 +129,19 @@ class SnakeGame:
 
     def out_of_bounds(self, key_clicked):
         # check if snake head goes out of bounds
-        if (key_clicked == 'Left') and self.__x - 1 < 0:
+        if (self.__key_clicked == 'Left') and self.__x == 0:
+            self.snake.remove(self.snake[len(self.snake)-1])
             return True
-        if (key_clicked == 'Right') and self.__x + 1 == 40:
+        if (self.__key_clicked == 'Right') and self.__x == 39:
+            self.snake.remove(self.snake[len(self.snake) - 1])
             return True
-        if (key_clicked == 'Up') and self.__y + 1 == 30:
+        if (self.__key_clicked == 'Up') and self.__y == 29:
+            self.snake.remove(self.snake[len(self.snake) - 1])
             return True
-        if (key_clicked == 'Down') and self.__y - 1 < 0:
+        if (self.__key_clicked == 'Down') and self.__y == 0:
+            self.snake.remove(self.snake[len(self.snake) - 1])
             return True
+        return False
 
     def is_over(self, bounds) -> bool:
         # if snake head bumps into itself or is out of bounds, game ends

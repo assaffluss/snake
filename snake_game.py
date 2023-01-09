@@ -20,7 +20,8 @@ class SnakeGame:
         self.score = 0
 
     def read_key(self, key_clicked: Optional[str]) -> None:
-        self.__key_clicked = key_clicked
+        if key_clicked:
+            self.__key_clicked = key_clicked
 
     def update_objects(self) -> None:
         if (self.__key_clicked == 'Left') and (self.__x > 0):
@@ -35,8 +36,6 @@ class SnakeGame:
         elif (self.__key_clicked == 'Down') and (self.__y < 30):
             self.__y -= 1
             self.direction = 'd'
-        if self.__key_clicked is None:
-            self.move(self.direction)
         self.apple_maker()
         self.snake.append((self.__x, self.__y))
         # keep snake same length if apple wasn't eaten
@@ -88,17 +87,6 @@ class SnakeGame:
 
     def get_score(self):
         return self.score
-
-    def move(self, direction):
-        # check last pressed direction and keep moving that way
-        if direction == 'l':
-            self.__x -= 1
-        if direction == 'r':
-            self.__x += 1
-        if direction == 'u':
-            self.__y += 1
-        if direction == 'd':
-            self.__y -= 1
 
     def draw_board(self, gd: GameDisplay) -> None:
         # Draw updated position

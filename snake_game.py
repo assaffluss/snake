@@ -24,6 +24,7 @@ class SnakeGame:
             self.__key_clicked = key_clicked
 
     def update_objects(self) -> None:
+        self.wall_maker()
         if (self.__key_clicked == 'Left') and (self.__x > 0):
             self.__x -= 1
             self.direction = 'l'

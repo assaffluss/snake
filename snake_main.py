@@ -14,19 +14,20 @@ def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
     # END OF ROUND 0
     gd.end_round()
     check_click = None
-    last_click = None
     check_bounds = False
+    change_click = 'Up'
+    key_clicked = 'Up'
     while not game.is_over(check_bounds):
+        # check which next click is an illegal one
+        if key_clicked is not None:
+            check_click, change_click = clicked(key_clicked)
         # CHECK KEY CLICKS
         key_clicked = gd.get_key_clicked()
-        if key_clicked is not None:
-            # check if current click is an illegal one
-            if key_clicked == check_click:
-                continue
-            # update last click to current one for next round
-            last_click = key_clicked
-            check_click = clicked(last_click)
-        if game.out_of_bounds(last_click):
+        # check if current click is an illegal one
+        if key_clicked == check_click:
+            key_clicked = change_click
+        # makes sure snake does not go out of bounds
+        if game.out_of_bounds(key_clicked):
             check_bounds = True
             continue
         game.read_key(key_clicked)

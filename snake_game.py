@@ -1,22 +1,22 @@
 from typing import Optional
 from game_display import GameDisplay
 from game_utils import *
+import math
 
 
 class SnakeGame:
 
-    def __init__(self) -> None:
-        # check if this is right way to call arg.width/height
-        self.board_size = Size(WIDTH, HEIGHT)
-        self.__x = self.board_size[0] // 2
-        self.__y = self.board_size[1] // 2
+    def __init__(self, height, width, n_apples, n_walls) -> None:
+        self.__x = height // 2
+        self.__y = width // 2
         self.__key_clicked = None
         self.snake = [(self.__x - 2, self.__y), (self.__x - 1, self.__y), (self.__x, self.__y)]
         self.apples = []
-        # change number of apples to arg by user with default being 3
-        self.n_apples = 3
+        self.n_apples = n_apples
         self.walls = []
         self.direction = None
+        self.grow = 0
+        self.score = 0
 
     def read_key(self, key_clicked: Optional[str]) -> None:
         self.__key_clicked = key_clicked
@@ -39,9 +39,12 @@ class SnakeGame:
         self.apple_maker()
         self.snake.append((self.__x, self.__y))
         # keep snake same length if apple wasn't eaten
-        if not self.check_apple():
+        self.check_apple()
+        if self.grow == 0:
             # check how to keep snake length 3 until first apple eaten
             self.snake.remove(self.snake[0])
+        else:
+            self.grow -= 1
 
     def apple_maker(self):
         # if max number of apples were eaten, renew them
@@ -63,8 +66,14 @@ class SnakeGame:
         for apple in self.apples:
             if self.__x == apple[0] and self.__y == apple[1]:
                 self.apples.remove(apple)
+                self.grow = 3
+                # update the score for eating an apple
+                self.score += round(math.sqrt(len(self.snake)-1))
                 return True
         return False
+
+    def get_score(self):
+        return self.score
 
     def move(self, direction):
         # check last pressed direction and keep moving that way

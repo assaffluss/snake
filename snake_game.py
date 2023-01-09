@@ -1,58 +1,110 @@
-import argparse
-import game_utils
-from snake_game import SnakeGame
+from typing import Optional
 from game_display import GameDisplay
+from game_utils import *
 
 
-def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
-    # INIT OBJECTS
-    game = SnakeGame()
-    gd.show_score(0)
-    # DRAW BOARD
-    game.apple_maker()
-    game.draw_board(gd)
-    # END OF ROUND 0
-    gd.end_round()
-    check_click = None
-    last_click = None
-    check_bounds = False
-    while not game.is_over(check_bounds):
-        # CHECK KEY CLICKS
-        key_clicked = gd.get_key_clicked()
-        if key_clicked is not None:
-            # check if current click is an illegal one
-            if key_clicked == check_click:
-                continue
-            # update last click to current one for next round
-            last_click = key_clicked
-            check_click = clicked(last_click)
-        if game.out_of_bounds(last_click):
-            check_bounds = True
-            continue
-        game.read_key(key_clicked)
-        # UPDATE OBJECTS
-        game.update_objects()
-        # DRAW BOARD
-        game.draw_board(gd)
-        # WAIT FOR NEXT ROUND:
-        game.end_round()
-        gd.end_round()
+class SnakeGame:
 
+    def __init__(self) -> None:
+        # check if this is right way to call arg.width/height
+        self.board_size = Size(WIDTH, HEIGHT)
+        self.__x = self.board_size[0] // 2
+        self.__y = self.board_size[1] // 2
+        self.__key_clicked = None
+        self.snake = [(self.__x - 2, self.__y), (self.__x - 1, self.__y), (self.__x, self.__y)]
+        self.apples = []
+        # change number of apples to arg by user with default being 3
+        self.n_apples = 3
+        self.walls = []
+        self.direction = None
 
-def clicked(last_click):
-    # return the value of illegal click for next time
-    # user clicks
-    if last_click == 'Up':
-        return 'Down'
-    if last_click == 'Down':
-        return 'Up'
-    if last_click == 'Left':
-        return 'Right'
-    if last_click == 'Right':
-        return 'Left'
-    return None
+    def read_key(self, key_clicked: Optional[str]) -> None:
+        self.__key_clicked = key_clicked
 
+    def update_objects(self) -> None:
+        if (self.__key_clicked == 'Left') and (self.__x > 0):
+            self.__x -= 1
+            self.direction = 'l'
+        elif (self.__key_clicked == 'Right') and (self.__x < 40):
+            self.__x += 1
+            self.direction = 'r'
+        if (self.__key_clicked == 'Up') and (self.__y > 0):
+            self.__y += 1
+            self.direction = 'u'
+        elif (self.__key_clicked == 'Down') and (self.__y < 30):
+            self.__y -= 1
+            self.direction = 'd'
+        if self.__key_clicked is None:
+            self.move(self.direction)
+        self.apple_maker()
+        self.snake.append((self.__x, self.__y))
+        # keep snake same length if apple wasn't eaten
+        if not self.check_apple():
+            # check how to keep snake length 3 until first apple eaten
+            self.snake.remove(self.snake[0])
 
-if __name__ == "__main__":
-    print("You should run:\n"
-          "> python game_display.py")
+    def apple_maker(self):
+        # if max number of apples were eaten, renew them
+        if len(self.apples) < self.n_apples:
+            # get random coordinates for the apple
+            coordinates = get_random_apple_data()
+            # check if coordinates are valid
+            is_valid = True
+            # check if coordinates clash with existing apple , snake or wall
+            if coordinates in self.apples or coordinates in self.snake or coordinates in self.walls:
+                is_valid = False
+            # add apple to the game
+            if is_valid:
+                self.apples.append(coordinates)
+                pass
+
+    def check_apple(self):
+        # check if snake ate the apple
+        for apple in self.apples:
+            if self.__x == apple[0] and self.__y == apple[1]:
+                self.apples.remove(apple)
+                return True
+        return False
+
+    def move(self, direction):
+        # check last pressed direction and keep moving that way
+        if direction == 'l':
+            self.__x -= 1
+        if direction == 'r':
+            self.__x += 1
+        if direction == 'u':
+            self.__y += 1
+        if direction == 'd':
+            self.__y -= 1
+
+    def draw_board(self, gd: GameDisplay) -> None:
+        # Draw updated position
+        for x, y in self.snake:
+            gd.draw_cell(x, y, "black")
+        for apple in self.apples:
+            gd.draw_cell(apple[0], apple[1], "green")
+
+    def end_round(self) -> None:
+        pass
+
+    def out_of_bounds(self, key_clicked):
+        # check if snake head goes out of bounds
+        if (key_clicked == 'Left') and self.__x - 1 < 0:
+            return True
+        if (key_clicked == 'Right') and self.__x + 1 == 40:
+            return True
+        if (key_clicked == 'Up') and self.__y + 1 == 30:
+            return True
+        if (key_clicked == 'Down') and self.__y - 1 < 0:
+            return True
+
+    def is_over(self, bounds) -> bool:
+        # if snake head bumps into itself or is out of bounds, game ends
+        if bounds is True:
+            return True
+        for block in self.snake:
+            if block == self.snake[len(self.snake) - 2]:
+                return False
+            if block == (self.__x, self.__y):
+                return True
+        return False

@@ -72,7 +72,7 @@ class SnakeGame:
                 return True
         return False
         
-    def wall_maker(self):
+   def wall_maker(self):
         if len(self.walls) < self.n_walls:
             for i in range(self.n_walls):
                 wall_coordinates = get_random_wall_data()
@@ -84,6 +84,31 @@ class SnakeGame:
                 # add apple to the game
                 if is_valid:
                     self.walls.append(wall_coordinates)
+    #fixed wall maker                 
+    def wall_maker(self):
+    if len(self.walls) < self.n_walls:
+        wall_coordinates = get_random_wall_data()
+        wall_x = wall_coordinates[0]
+        wall_y = wall_coordinates[1]
+        direction = wall_coordinates[2]
+        wall = []
+        for i in range (3):
+            if direction == "Up":
+                wall.append((wall_x, wall_y - i))
+            if direction == "Down":
+                wall.append((wall_x, wall_y + i))
+            if direction == "Left":
+                wall.append((wall_x - i, wall_y))
+            if direction == "Right":
+                wall.append((wall_x + i, wall_y))
+        is_valid = True
+        for coordinate in wall:
+            if coordinate in self.apples or coordinate in self.snake or coordinate in self.walls:
+                is_valid = False
+
+        if is_valid:
+            self.walls.append(wall)
+                
 
     def get_score(self):
         return self.score

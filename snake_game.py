@@ -14,6 +14,7 @@ class SnakeGame:
         self.apples = []
         self.n_apples = n_apples
         self.walls = []
+        self.n_walls = n_walls
         self.direction = None
         self.grow = 0
         self.score = 0

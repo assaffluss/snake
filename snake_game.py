@@ -106,6 +106,8 @@ class SnakeGame:
             gd.draw_cell(x, y, "black")
         for apple in self.apples:
             gd.draw_cell(apple[0], apple[1], "green")
+        for wall in self.walls:
+            gd.draw_cell(wall[0], wall[1], "blue")
 
     def end_round(self) -> None:
         pass

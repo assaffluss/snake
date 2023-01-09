@@ -1,0 +1,181 @@
+from typing import Optional
+from game_display import GameDisplay
+from game_utils import *
+import math
+
+
+class SnakeGame:
+
+    def __init__(self, height, width, n_apples, n_walls) -> None:
+        self.__x = width // 2
+        self.__y = height // 2
+        self.__key_clicked = None
+        self.snake = [(self.__x, self.__y - 2), (self.__x, self.__y-1), (self.__x, self.__y)]
+        self.apples = []
+        self.n_apples = n_apples
+        self.walls = []
+        self.n_walls = n_walls
+        self.grow = 0
+        self.score = 0
+        self.__key_clicked = 'Up'
+
+    def read_key(self, key_clicked: Optional[str]) -> None:
+        if key_clicked:
+            self.__key_clicked = key_clicked
+
+    def update_objects(self) -> None:
+        self.move_snake()
+        self.apple_maker()
+        self.snake.append((self.__x, self.__y))
+        # keep snake same length if apple wasn't eaten
+        self.check_apple()
+        if self.grow == 0:
+            self.snake.remove(self.snake[0])
+        else:
+            self.grow -= 1
+
+    def move_snake(self):
+        if (self.__key_clicked == 'Left') and (self.__x > 0):
+            self.__x -= 1
+        elif (self.__key_clicked == 'Right') and (self.__x < 40):
+            self.__x += 1
+        if (self.__key_clicked == 'Up') and (self.__y > 0):
+            self.__y += 1
+        elif (self.__key_clicked == 'Down') and (self.__y < 30):
+            self.__y -= 1
+
+    def wall_maker(self):
+        # check number of walls on screen
+        if len(self.walls) < self.n_walls:
+            wall_list = []
+            # get random coordinates for the apple
+            coordinates = get_random_wall_data()
+            # check if coordinates are valid
+            is_valid = True
+            # check if coordinates clash with existing apple, snake or wall
+            if coordinates in self.apples or coordinates in self.snake or coordinates in self.walls:
+                is_valid = False
+            # add wall to the game
+            if is_valid:
+                wall_list.append(coordinates)
+                if coordinates[2] == 'Right' or coordinates[2] == 'Left':
+                    wall_list.append((coordinates[0] + 1, coordinates[1], coordinates[2]))
+                    wall_list.append((coordinates[0] - 1, coordinates[1], coordinates[2]))
+                if coordinates[2] == 'Up' or coordinates[2] == 'Down':
+                    wall_list.append((coordinates[0], coordinates[1] + 1, coordinates[2]))
+                    wall_list.append((coordinates[0], coordinates[1] - 1, coordinates[2]))
+                self.walls.append(wall_list)
+                pass
+
+    def wall_mover(self):
+        new_wall = list()
+        new_list = list()
+        for wall_list in self.walls:
+            for wall in wall_list:
+                if wall[2] == 'Right':
+                    wall = (wall[0] + 1, wall[1], wall[2])
+                if wall[2] == 'Left':
+                    wall = (wall[0] - 1, wall[1], wall[2])
+                if wall[2] == 'Up':
+                    wall = (wall[0], wall[1] + 1, wall[2])
+                if wall[2] == 'Down':
+                    wall = (wall[0], wall[1] - 1, wall[2])
+                if wall[0] > 39 or wall[0] < 0 or wall[1] > 29 or wall[1] < 0:
+                    continue
+                if not self.check_wall(wall):
+                    return True
+                new_wall.append(wall)
+            new_list.append(new_wall)
+            new_wall = list()
+        self.walls = new_list
+        if len(self.walls[0]) == 0:
+            self.walls.remove(self.walls[0])
+        if len(self.walls) == 2 and len(self.walls[1]) == 0:
+            self.walls.remove(self.walls[1])
+        return False
+
+    # shorten wall before out of bounds, checks if wall hits apple or snake
+    def check_wall(self, wall):
+        check = (wall[0], wall[1])
+        check = (wall[0], wall[1])
+        if check == self.snake[len(self.snake) - 1]:
+            return False
+        if check in self.snake[0:len(self.snake) - 2]:
+            for place in range(len(self.snake)):
+                if self.snake[place] == check:
+                    self.snake = self.snake[place:]
+                    if len(self.snake) == 1:
+                        return False
+                    return True
+        if check in self.apples:
+            self.apples.remove(check)
+        return True
+
+    def apple_maker(self):
+        # if less than max number of apples are on screen, renew them
+        if len(self.apples) < self.n_apples:
+            # get random coordinates for the apple
+            coordinates = get_random_apple_data()
+            # check if coordinates are valid
+            is_valid = True
+            # check if coordinates clash with existing apple, snake or wall
+            if coordinates in self.apples or coordinates in self.snake or coordinates in self.walls:
+                is_valid = False
+            # add apple to the game
+            if is_valid:
+                self.apples.append(coordinates)
+                pass
+
+    def check_apple(self):
+        # check if snake ate the apple
+        for apple in self.apples:
+            if self.__x == apple[0] and self.__y == apple[1]:
+                self.apples.remove(apple)
+                self.grow = 3
+                # update the score for eating an apple
+                self.score += round(math.sqrt(len(self.snake)-1))
+                return True
+        return False
+
+    def get_score(self):
+        return self.score
+
+    def draw_board(self, gd: GameDisplay) -> None:
+        # Draw updated position
+        for x, y in self.snake:
+            gd.draw_cell(x, y, "black")
+        for apple in self.apples:
+            gd.draw_cell(apple[0], apple[1], "green")
+        for wall_list in self.walls:
+            for wall in wall_list:
+                gd.draw_cell(wall[0], wall[1], "blue")
+
+    def end_round(self) -> None:
+        pass
+
+    def out_of_bounds(self):
+        # check if snake head goes out of bounds
+        if (self.__key_clicked == 'Left') and self.__x == 0:
+            self.snake.remove(self.snake[len(self.snake)-1])
+            return True
+        if (self.__key_clicked == 'Right') and self.__x == 39:
+            self.snake.remove(self.snake[len(self.snake) - 1])
+            return True
+        if (self.__key_clicked == 'Up') and self.__y == 29:
+            self.snake.remove(self.snake[len(self.snake) - 1])
+            return True
+        if (self.__key_clicked == 'Down') and self.__y == 0:
+            self.snake.remove(self.snake[len(self.snake) - 1])
+            return True
+        return False
+
+    def is_over(self, bounds) -> bool:
+        # if snake head bumps into itself or is out of bounds, game ends
+        if bounds is True:
+            return True
+        for block in self.snake:
+            if block == self.snake[len(self.snake) - 2]:
+                return False
+            if block == (self.__x, self.__y):
+                return True
+        return False

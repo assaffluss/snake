@@ -93,7 +93,7 @@ class SnakeGame:
         wall_y = wall_coordinates[1]
         direction = wall_coordinates[2]
         wall = []
-        for i in range (3):
+        for i in range (-1, 2):
             if direction == "Up":
                 wall.append((wall_x, wall_y - i))
             if direction == "Down":

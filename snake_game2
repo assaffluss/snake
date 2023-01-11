@@ -30,8 +30,8 @@ class SnakeGame:
 
     def update_objects(self) -> None:
         if not self.debug:
-            self.move_snake()
             self.apple_maker()
+            self.move_snake()
             self.snake.append((self.__x, self.__y))
             # keep snake same length if apple wasn't eaten
             if self.grow != 0:
@@ -58,7 +58,7 @@ class SnakeGame:
         # check number of walls on screen
         if len(self.walls) < self.n_walls:
             wall_list = []
-            # get random coordinates for the apple
+            # get random coordinates for the wall
             coordinates = get_random_wall_data()
             # check if coordinates are valid
             is_valid = True
@@ -68,15 +68,28 @@ class SnakeGame:
             # add wall to the game
             if is_valid:
                 if coordinates[2] == 'Right' or coordinates[2] == 'Left':
+                    check_coordinate1 = (coordinates[0] + 1, coordinates[1], coordinates[2])
+                    check_coordinate2 = (coordinates[0] - 1, coordinates[1], coordinates[2])
+                    # check that wall isn't made on something else
+                    if check_coordinate1 in self.apples or coordinates in self.snake or coordinates in self.walls\
+                            or check_coordinate2 in self.apples or coordinates in self.snake or\
+                            coordinates in self.walls:
+                        return
                     wall_list.append((coordinates[0] + 1, coordinates[1], coordinates[2]))
                     wall_list.append(coordinates)
                     wall_list.append((coordinates[0] - 1, coordinates[1], coordinates[2]))
                 if coordinates[2] == 'Up' or coordinates[2] == 'Down':
+                    check_coordinate1 = (coordinates[0], coordinates[1] + 1, coordinates[2])
+                    check_coordinate2 = (coordinates[0], coordinates[1] + 1, coordinates[2])
+                    # check that wall isn't made on something else
+                    if check_coordinate1 in self.apples or coordinates in self.snake or coordinates in self.walls \
+                            or check_coordinate2 in self.apples or coordinates in self.snake or\
+                            coordinates in self.walls:
+                        return
                     wall_list.append((coordinates[0], coordinates[1] + 1, coordinates[2]))
                     wall_list.append(coordinates)
                     wall_list.append((coordinates[0], coordinates[1] - 1, coordinates[2]))
                 self.walls.append(wall_list)
-                pass
 
     def wall_mover(self):
         if self.rounds % 2 == 0:
@@ -116,7 +129,7 @@ class SnakeGame:
             if check in self.snake[0:len(self.snake) - 2]:
                 for place in range(len(self.snake)):
                     if self.snake[place] == check:
-                        self.snake = self.snake[place+1:]
+                        self.snake = self.snake[place:]
                         if len(self.snake) == 1 or self.is_growing:
                             return False
                         return True
@@ -141,6 +154,7 @@ class SnakeGame:
             if self.__x == apple[0] and self.__y == apple[1]:
                 self.apples.remove(apple)
                 self.grow = 3
+                self.apple_maker()
                 # update the score for eating an apple
                 self.score += round(math.sqrt(len(self.snake)-1))
                 return True

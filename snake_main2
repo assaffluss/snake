@@ -22,6 +22,11 @@ def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
     while not game.is_over(check_game_over):
         check_game_over = game.wall_mover()
         game.wall_maker()
+        if not debug:
+            if check_game_over:
+                game.update_objects()
+                game.draw_board(gd)
+                continue
         # check which next click is an illegal one
         check_click, change_click = clicked(key_clicked)
         # CHECK KEY CLICKS
@@ -33,7 +38,6 @@ def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
         if not debug:
             if game.out_of_bounds(key_clicked):
                 check_game_over = True
-                continue
         # UPDATE OBJECTS
         game.read_key(key_clicked)
         game.update_objects()
@@ -42,8 +46,8 @@ def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
         # DRAW BOARD
         game.draw_board(gd)
         # WAIT FOR NEXT ROUND:
-        game.end_round()
         gd.end_round()
+        game.end_round()
 
 
 def clicked(last_click):

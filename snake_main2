@@ -6,34 +6,37 @@ from game_display import GameDisplay
 
 def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
     # INIT OBJECTS
-    game = SnakeGame(args.height, args.width, args.apples, args.walls)
+    debug = args.debug
+    game = SnakeGame(args.height, args.width, args.apples, debug, args.walls, args.rounds)
+    # game = SnakeGame(40, 30, 0, 0, 0)
     gd.show_score(0)
+    game.wall_maker()
+    game.apple_maker()
     # DRAW BOARD
     game.draw_board(gd)
     # END OF ROUND 0
     gd.end_round()
-    check_click = None
     check_game_over = False
-    change_click = 'Up'
     key_clicked = 'Up'
     while not game.is_over(check_game_over):
-        game.wall_maker()
         check_game_over = game.wall_mover()
+        game.wall_maker()
         # check which next click is an illegal one
-        if key_clicked is not None:
-            check_click, change_click = clicked(key_clicked)
+        check_click, change_click = clicked(key_clicked)
         # CHECK KEY CLICKS
         key_clicked = gd.get_key_clicked()
         # check if current click is an illegal one
-        if key_clicked == check_click:
+        if key_clicked == check_click or key_clicked is None:
             key_clicked = change_click
         # makes sure snake does not go out of bounds
-        if game.out_of_bounds():
-            check_game_over = True
-            continue
-        game.read_key(key_clicked)
+        if not debug:
+            if game.out_of_bounds(key_clicked):
+                check_game_over = True
+                continue
         # UPDATE OBJECTS
+        game.read_key(key_clicked)
         game.update_objects()
+        # check_game_over = game.wall_mover()
         gd.show_score(game.get_score())
         # DRAW BOARD
         game.draw_board(gd)
@@ -52,7 +55,7 @@ def clicked(last_click):
         return 'Right', 'Left'
     if last_click == 'Right':
         return 'Left', 'Right'
-    return None
+    return None, None
 
 
 if __name__ == "__main__":

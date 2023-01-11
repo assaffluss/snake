@@ -56,6 +56,10 @@ class SnakeGame:
             self.__y += 1
         elif (self.__key_clicked == 'Down') and (self.__y > 0):
             self.__y -= 1
+        for cell in self.snake[:-2]:
+            if cell == self.snake[len(self.snake) - 1]:
+                self.snake.remove(self.snake[len(self.snake) - 1])
+                self.is_over(True)
 
     def wall_maker(self):
         # check number of walls on screen
@@ -123,20 +127,18 @@ class SnakeGame:
                 new_list.append(new_wall)
                 new_wall = list()
             self.walls = new_list
-            if len(self.walls) > 1:
-                if len(self.walls[0]) == 0:
-                    self.walls.remove(self.walls[0])
-                if len(self.walls) == 2 and len(self.walls[1]) == 0:
-                    self.walls.remove(self.walls[1])
+            for wall in range(len(self.walls)-1):
+                if len(self.walls[wall]) == 0:
+                    self.walls.remove(self.walls[wall])
         return False
 
     # shorten wall before out of bounds, checks if wall hits apple or snake
     def check_wall(self, wall):
         check = (wall[0], wall[1])
         if not self.debug:
-            if check == self.snake[len(self.snake) - 1]:
-                self.snake.remove(self.snake[len(self.snake)-1])
-                return False
+            # if check == self.snake[len(self.snake) - 1]:
+            #     self.snake.remove(self.snake[len(self.snake)-1])
+            #     return False
             if check in self.snake[0:len(self.snake) - 1]:
                 for place in range(len(self.snake)):
                     if self.snake[place] == check:
@@ -162,7 +164,7 @@ class SnakeGame:
     def check_apple(self):
         # check if snake ate the apple
         for apple in self.apples:
-            if self.__x == apple[0] and self.__y == apple[1]:
+            if self.snake[-1][0] == apple[0] and self.snake[-1][1] == apple[1]:
                 self.apples.remove(apple)
                 self.grow = 3
                 self.apple_maker()

@@ -84,7 +84,9 @@ class SnakeGame:
                 self.walls.append(wall_list)
 
     def check_clash(self, coordinates):
-        if coordinates in self.apples or coordinates in self.snake or coordinates in self.walls:
+        coordinates1 = tuple
+        coordinates2 = tuple
+        if coordinates in self.apples or coordinates in self.snake:
             return False
         # check that wall isn't made on something else
         if coordinates[2] == 'Right' or coordinates[2] == 'Left':
@@ -93,10 +95,18 @@ class SnakeGame:
         if coordinates[2] == 'Up' or coordinates[2] == 'Down':
             coordinates1 = (coordinates[0], coordinates[1] + 1, coordinates[2])
             coordinates2 = (coordinates[0], coordinates[1] - 1, coordinates[2])
-        if coordinates1 in self.apples or coordinates1 in self.snake or coordinates1 in self.walls:
+        if coordinates1 in self.apples or coordinates1 in self.snake:
             return False
-        if coordinates2 in self.apples or coordinates2 in self.snake or coordinates2 in self.walls:
+        if coordinates2 in self.apples or coordinates2 in self.snake:
             return False
+        for walls in self.walls:
+            for wall in walls:
+                if wall[0] == coordinates[0] and wall[1] == coordinates[1]:
+                    return False
+                if wall[0] == coordinates1[0] and wall[1] == coordinates1[1]:
+                    return False
+                if wall[0] == coordinates2[0] and wall[1] == coordinates2[1]:
+                    return False
         return True
 
     def wall_mover(self):

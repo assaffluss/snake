@@ -62,43 +62,42 @@ class SnakeGame:
                 self.is_over(True)
 
     def wall_maker(self):
+        # הקצה של הקיר יכול להיות מעבר לגבולות הלוח, כלומר, אמצע הקיר יכול להיות בכל מקום בלוח.
         # check number of walls on screen
         if len(self.walls) < self.n_walls:
             wall_list = []
             # get random coordinates for the wall
             coordinates = get_random_wall_data()
-            # check if coordinates are valid
-            is_valid = True
-            # check if coordinates clash with existing apple, snake or wall
-            if coordinates in self.apples or coordinates in self.snake or coordinates in self.walls:
-                is_valid = False
+            # check if all 3 coordinates going to be made are valid
+            # and don't clash with existing apple, snake or wall
+            is_valid = self.check_clash(coordinates)
             # add wall to the game
             if is_valid:
                 if coordinates[2] == 'Right' or coordinates[2] == 'Left':
-                    check_coordinate1 = (coordinates[0] + 1, coordinates[1], coordinates[2])
-                    check_coordinate2 = (coordinates[0] - 1, coordinates[1], coordinates[2])
-                    # check that wall isn't made on something else
-                    if check_coordinate1 in self.apples or check_coordinate1 in self.snake or\
-                            check_coordinate1 in self.walls\
-                            or check_coordinate2 in self.apples or check_coordinate2 in self.snake or\
-                            check_coordinate2 in self.walls:
-                        return
                     wall_list.append((coordinates[0] + 1, coordinates[1], coordinates[2]))
                     wall_list.append(coordinates)
                     wall_list.append((coordinates[0] - 1, coordinates[1], coordinates[2]))
                 if coordinates[2] == 'Up' or coordinates[2] == 'Down':
-                    check_coordinate1 = (coordinates[0], coordinates[1] + 1, coordinates[2])
-                    check_coordinate2 = (coordinates[0], coordinates[1] - 1, coordinates[2])
-                    # check that wall isn't made on something else
-                    if check_coordinate1 in self.apples or check_coordinate1 in self.snake or\
-                            check_coordinate1 in self.walls \
-                            or check_coordinate2 in self.apples or check_coordinate2 in self.snake or\
-                            check_coordinate2 in self.walls:
-                        return
                     wall_list.append((coordinates[0], coordinates[1] + 1, coordinates[2]))
                     wall_list.append(coordinates)
                     wall_list.append((coordinates[0], coordinates[1] - 1, coordinates[2]))
                 self.walls.append(wall_list)
+
+    def check_clash(self, coordinates):
+        if coordinates in self.apples or coordinates in self.snake or coordinates in self.walls:
+            return False
+        # check that wall isn't made on something else
+        if coordinates[2] == 'Right' or coordinates[2] == 'Left':
+            coordinates1 = (coordinates[0] + 1, coordinates[1], coordinates[2])
+            coordinates2 = (coordinates[0] - 1, coordinates[1], coordinates[2])
+        if coordinates[2] == 'Up' or coordinates[2] == 'Down':
+            coordinates1 = (coordinates[0], coordinates[1] + 1, coordinates[2])
+            coordinates2 = (coordinates[0], coordinates[1] - 1, coordinates[2])
+        if coordinates1 in self.apples or coordinates1 in self.snake or coordinates1 in self.walls:
+            return False
+        if coordinates2 in self.apples or coordinates2 in self.snake or coordinates2 in self.walls:
+            return False
+        return True
 
     def wall_mover(self):
         if self.rounds % 2 == 1:

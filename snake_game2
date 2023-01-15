@@ -25,6 +25,7 @@ class SnakeGame:
         self.grow = 0
         self.score = 0
         self.__key_clicked = 'Up'
+        self.crashed = None
 
     def read_key(self, key_clicked: Optional[str]) -> None:
         if key_clicked:
@@ -32,18 +33,20 @@ class SnakeGame:
 
     def update_objects(self) -> None:
         if not self.debug:
-            self.check_apple()
             self.apple_maker()
+            self.check_apple()
             self.move_snake()
             self.snake.append((self.__x, self.__y))
-
-            # keep snake same length if apple wasn't eaten
             if self.grow != 0:
                 self.grow -= 1
                 self.is_growing = True
             else:
                 self.snake.remove(self.snake[0])
                 self.is_growing = False
+            if self.snake[-1] in self.apples:
+                self.apple_maker()
+                self.check_apple()
+            # keep snake same length if apple wasn't eaten
         else:
             self.apple_maker()
 
@@ -60,6 +63,11 @@ class SnakeGame:
             if cell == self.snake[len(self.snake) - 1]:
                 self.snake.remove(self.snake[len(self.snake) - 1])
                 self.is_over(True)
+        for walls in self.walls:
+            for wall in walls:
+                if wall[0] == self.snake[-1][0] and wall[1] == self.snake[-1][1]:
+                    self.snake.remove(self.snake[-1])
+                    self.crashed = "exit"
 
     def wall_maker(self):
         # הקצה של הקיר יכול להיות מעבר לגבולות הלוח, כלומר, אמצע הקיר יכול להיות בכל מקום בלוח.
@@ -136,28 +144,32 @@ class SnakeGame:
                 new_list.append(new_wall)
                 new_wall = list()
             self.walls = new_list
-            for wall in range(len(self.walls)-1):
-                if len(self.walls[wall]) == 0:
-                    self.walls.remove(self.walls[wall])
+            for wall in self.walls:
+                if len(wall) == 0:
+                    self.walls.remove(wall)
         return False
 
     # shorten wall before out of bounds, checks if wall hits apple or snake
     def check_wall(self, wall):
         check = (wall[0], wall[1])
         if not self.debug:
-            # if check == self.snake[len(self.snake) - 1]:
-            #     self.snake.remove(self.snake[len(self.snake)-1])
-            #     return False
-            if check in self.snake[0:len(self.snake) - 1]:
+            if check in self.snake[0:len(self.snake)-1]:
                 for place in range(len(self.snake)):
                     if self.snake[place] == check:
-                        self.snake = self.snake[place:]
-                        if len(self.snake) < 2 or self.is_growing:
-                            return False
-                        return True
+                        self.crashed = place
+                    if check[0] == self.snake[-1][0] and check[1] == self.snake[-1][1]:
+                        return False
         if check in self.apples:
             self.apples.remove(check)
         return True
+
+    def end_if_crashed(self):
+        if self.crashed is not None:
+            self.snake = self.snake[self.crashed:]
+            if len(self.snake) < 2:
+                return True
+        self.crashed = None
+        return False
 
     def apple_maker(self):
         # if less than max number of apples are on screen, renew them
@@ -173,9 +185,9 @@ class SnakeGame:
     def check_apple(self):
         # check if snake ate the apple
         for apple in self.apples:
-            if self.snake[-1][0] == apple[0] and self.snake[-1][1] == apple[1]:
+            if self.snake[-1] == apple:
                 self.apples.remove(apple)
-                self.grow = 3
+                self.grow += 3
                 self.apple_maker()
                 # update the score for eating an apple
                 self.score += round(math.sqrt(len(self.snake)-1))
@@ -187,10 +199,10 @@ class SnakeGame:
 
     def draw_board(self, gd: GameDisplay) -> None:
         # Draw updated position
-        for x, y in self.snake:
-            gd.draw_cell(x, y, "black")
         for apple in self.apples:
             gd.draw_cell(apple[0], apple[1], "green")
+        for x, y in self.snake:
+            gd.draw_cell(x, y, "black")
         for wall_list in self.walls:
             for wall in wall_list:
                 if 0 <= wall[0] < self.width and 0 <= wall[1] < self.height:
@@ -216,7 +228,6 @@ class SnakeGame:
             return_val = True
         if return_val:
             self.snake.remove(self.snake[-1])
-
         return return_val
 
     def is_over(self, bad_wall_or_bounds) -> bool:

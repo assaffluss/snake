@@ -20,12 +20,19 @@ def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
     check_game_over = False
     key_clicked = 'Up'
     while not game.is_over(check_game_over):
+        # checks if the head of snake should be removed because it hit a wall
+        if game.remove:
+            game.remove_head()
+            check_game_over = True
+            continue
+        # checks if snake hit itself and ends game if only head is left
         if game.crashed is not None:
             check_game_over = game.end_if_crashed()
             continue
         check_game_over = game.wall_mover()
         game.wall_maker()
         if not debug:
+            # if game should end, update objects and end the game
             if check_game_over:
                 game.update_objects()
                 game.draw_board(gd)
@@ -44,9 +51,6 @@ def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
         # UPDATE OBJECTS
         game.read_key(key_clicked)
         game.update_objects()
-        if game.crashed == "exit":
-            check_game_over = True
-            continue
         gd.show_score(game.get_score())
         # DRAW BOARD
         game.draw_board(gd)

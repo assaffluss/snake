@@ -5,6 +5,9 @@ from game_display import GameDisplay
 
 
 def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
+    # main loop of game takes in 2 arguments: gd and args
+    # gd is in charge of displaying game on screen
+    # args is the commandline arguments. these include height and width of game, numm of  walls apples...
     # INIT OBJECTS
     debug = args.debug
     # debug = True
@@ -20,12 +23,12 @@ def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
     check_game_over = False
     key_clicked = 'Up'
     while not game.is_over(check_game_over):
-        # checks if the head of snake should be removed because it hit a wall
+        # checks if the head of snake should be removed because it hit a wall and if so ends game
         if game.remove:
             game.remove_head()
             check_game_over = True
             continue
-        # checks if snake hit itself and ends game if only head is left
+        # checks if snake hit itself and ends game if only head is left and if so ends game
         if game.crashed is not None:
             check_game_over = game.end_if_crashed()
             continue
@@ -61,6 +64,7 @@ def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
 
 def clicked(last_click):
     # return the value of illegal click for next time user clicks
+    # prevents snake from making 180 degree turns
     if last_click == 'Up':
         return 'Down', 'Up'
     if last_click == 'Down':

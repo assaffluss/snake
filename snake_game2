@@ -35,6 +35,8 @@ class SnakeGame:
             self.__key_clicked = key_clicked
 
     def update_objects(self) -> None:
+    # This function updates the game state by creating new apples, 
+    # moving snake, checking if snake bumped into apple and updating length of snake
         if not self.debug:
             self.apple_maker()
             self.check_apple()
@@ -56,6 +58,7 @@ class SnakeGame:
             self.apple_maker()
 
     def move_snake(self):
+    # This function updates the snake's position based on key clicked by user
         if (self.__key_clicked == 'Left') and (self.__x > 0):
             self.__x -= 1
         elif (self.__key_clicked == 'Right') and (self.__x < self.width):
@@ -70,13 +73,16 @@ class SnakeGame:
                 if wall[0] == self.snake[-1][0] and wall[1] == self.snake[-1][1]:
                     self.remove = True
     def remove_head(self):
+    # This function removes head of snake
         self.snake.remove(self.snake[-1])
 
     def wall_maker(self):
+    # This function creates a new wall in the game
         # check number of walls on screen
         if len(self.walls) < self.n_walls:
             wall_list = []
             # get random coordinates for the wall
+            # coordinates is the middle cell of the wall
             coordinates = get_random_wall_data()
             # check method for comment
             is_valid = self.check_clash(coordinates)
